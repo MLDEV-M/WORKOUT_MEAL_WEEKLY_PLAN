@@ -3,8 +3,8 @@ def display_auth_page():
     from supabase import create_client, Client
     import time
 
-    SUPABASE_URL = 'https://qzmanfvecgkhdecljudw.supabase.co'
-    SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6bWFuZnZlY2draGRlY2xqdWR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDI4MTUyNjYsImV4cCI6MjA1ODM5MTI2Nn0.bvV6DBo-7KGkjpnlpNCe1-vDXHOSL4dsyigBL7C6ox0'
+    SUPABASE_URL = st.secrets["supabase"]["SUPABASE_URL"]
+    SUPABASE_KEY = st.secrets["supabase"]["SUPABASE_KEY"]
 
     supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
