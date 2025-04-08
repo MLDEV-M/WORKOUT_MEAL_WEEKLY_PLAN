@@ -224,7 +224,7 @@ def display_track_exercises_page(st):
             plan = plan[~plan['exercise_id'].isin(list(completed_ids))]
 
             st.success("Your remain exercises.")
-            st.session_state.current_plan = plan.copy()
+            st.session_state.current_plan = plan[plan["table_name"]!="stretch"].copy()
             st.write(st.session_state.current_plan)
         except Exception as e:
             st.error("Please try again. Choose exercise completed!")
