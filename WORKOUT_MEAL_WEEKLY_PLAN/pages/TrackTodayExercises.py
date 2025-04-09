@@ -99,9 +99,11 @@ def display_track_exercises_page(st):
         # Fetch exercises data from Supabase for the specific day
         response = supabase.table(day).select('exercise_id', 'exercise_name_alternative', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link','demo_time_done').execute()
         start_program = pd.DataFrame(response.data)
-        
+        # choose only morning or only afternoon
+        program_time = start_program[start_program["demo_time_done"]==time_done]
+        # remove alredy complete exercises
         completed_ids = get_uncompleted_exercises_for_week(supabase, st)
-        program = start_program[~start_program["exercise_id"].isin(completed_ids)]
+        program = program_time[~program_time["exercise_id"].isin(completed_ids)]
 
         #st.write("All the exercises:")
         #st.write(program)
@@ -207,11 +209,12 @@ def display_track_exercises_page(st):
     )
     # Create a selectbox with the default value set to today
     selected_time_done = st.selectbox(
-           'Choose the day',
+           'Choose the time of the day',
            options=["MORNING","AFTERNOON"],  
+           index=0,
            help="Select what time of the day you do for the exercise program"
         )
-    st.write(f"Selected day: {selected_program}")
+    st.write(f"Selected day and time: {selected_program} - {selected_time_done}")
     ids_choose, names_choose, plan = day_choose(selected_program,selected_time_done, st, supabase)
     user_choose =  st.session_state.user['user_id']
 
