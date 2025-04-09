@@ -93,11 +93,11 @@ def display_track_exercises_page(st):
             # 4. Filter out completed exercise_ids
             return list(completed_df["exercise_id"].unique())
     
-    def day_choose(day, st, supabase):
+    def day_choose(day,time_done, st, supabase):
         import pandas as pd
         
         # Fetch exercises data from Supabase for the specific day
-        response = supabase.table(day).select('exercise_id', 'exercise_name_alternative', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link').execute()
+        response = supabase.table(day).select('exercise_id', 'exercise_name_alternative', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link','demo_time_done').execute()
         start_program = pd.DataFrame(response.data)
         
         completed_ids = get_uncompleted_exercises_for_week(supabase, st)
@@ -106,6 +106,7 @@ def display_track_exercises_page(st):
         #st.write("All the exercises:")
         #st.write(program)
 
+       
         # Check session state for existing selections
         if 'selected_exercises_ids' in st.session_state and 'selected_exercises_names' in st.session_state:
             ids_returned = st.session_state.selected_exercises_ids
@@ -204,9 +205,14 @@ def display_track_exercises_page(st):
         index=exercise_day.index(today_in_greek),  # Set the default selection to today's day
         help="Select the day for the exercise program"
     )
-
+    # Create a selectbox with the default value set to today
+    selected_time_done = st.selectbox(
+           'Choose the day',
+           options=["MORNING","AFTERNOON"],  
+           help="Select what time of the day you do for the exercise program"
+        )
     st.write(f"Selected day: {selected_program}")
-    ids_choose, names_choose, plan = day_choose(selected_program, st, supabase)
+    ids_choose, names_choose, plan = day_choose(selected_program,selected_time_done, st, supabase)
     user_choose =  st.session_state.user['user_id']
 
     # Final submit button to mark exercises as completed
