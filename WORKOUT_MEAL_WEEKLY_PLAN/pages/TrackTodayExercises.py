@@ -100,7 +100,7 @@ def display_track_exercises_page(st):
         response = supabase.table(day).select('exercise_id', 'exercise_name_alternative', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link','demo_time_done').execute()
         # IF response table is empty
         if not response.data:
-            st.write("Congratulations!!! You dont have remain exercises") 
+            
             return [], [], pd.DataFrame() 
             
         
@@ -224,28 +224,32 @@ def display_track_exercises_page(st):
     ids_choose, names_choose, plan = day_choose(selected_program,selected_time_done, st, supabase)
     user_choose =  st.session_state.user['user_id']
     
-    if not plan.empty:
-        # Final submit button to mark exercises as completed
-        final_submit = st.button("Check Remain Exercises")
+    
+    # Final submit button to mark exercises as completed
+    final_submit = st.button("Check Remain Exercises")
     if 'current_plan' not in st.session_state:
         st.session_state.current_plan = plan.copy()
     
     if final_submit:
-        try:
-            #st.write("DEBUG: Submitted exercises", names_choose)
-            #st.write("DEBUG: For user ID", st.session_state.user['username'])
-
-            completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+        if not plan.empty:
             
-            plan = plan[~plan['exercise_id'].isin(list(completed_ids))]
-            st.session_state.current_plan = plan[plan["table_name"]!="stretch"].copy()
-            st.write("Your remain exercises except stretches.",len(st.session_state.current_plan))
-            
-            st.write(st.session_state.current_plan)
-        except Exception as e:
-            st.error("Please try again. Choose exercise completed!")
-            st.error(str(e))
-        
+            try:
+                #st.write("DEBUG: Submitted exercises", names_choose)
+                #st.write("DEBUG: For user ID", st.session_state.user['username'])
+    
+                completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+                
+                plan = plan[~plan['exercise_id'].isin(list(completed_ids))]
+                st.session_state.current_plan = plan[plan["table_name"]!="stretch"].copy()
+                st.write("Your remain exercises except stretches.",len(st.session_state.current_plan))
+                
+                st.write(st.session_state.current_plan)
+            except Exception as e:
+                st.error("Please try again. Choose exercise completed!")
+                st.error(str(e))
+        else: 
+            st.write("Congratulations!!!") 
+            st.write("You dont have remain exercises") 
            
 
 
