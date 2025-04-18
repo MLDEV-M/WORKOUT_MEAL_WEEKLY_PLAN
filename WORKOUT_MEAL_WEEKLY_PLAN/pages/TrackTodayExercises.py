@@ -101,7 +101,7 @@ def display_track_exercises_page(st):
         # IF response table is empty
         if not response.data:
              st.write("Congratulations!!! You dont have remain exercises") 
-            return [], [], "" 
+            return [], [], pd.DataFrame() 
             
         
         start_program = pd.DataFrame(response.data)
@@ -227,7 +227,8 @@ def display_track_exercises_page(st):
     # Final submit button to mark exercises as completed
     final_submit = st.button("Check Remain Exercises")
     if 'current_plan' not in st.session_state:
-        st.session_state.current_plan = plan.copy()
+        if not plan.empty:
+            st.session_state.current_plan = plan.copy()
     
     if final_submit:
         try:
