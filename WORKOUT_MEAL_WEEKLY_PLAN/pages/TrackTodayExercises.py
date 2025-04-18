@@ -100,7 +100,7 @@ def display_track_exercises_page(st):
         response = supabase.table(day).select('exercise_id', 'exercise_name_alternative', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link','demo_time_done').execute()
         # IF response table is empty
         if not response.data:
-             st.write("Congratulations!!! You dont have remain exercises") 
+            st.write("Congratulations!!! You dont have remain exercises") 
             return [], [], pd.DataFrame() 
             
         
