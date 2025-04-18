@@ -101,6 +101,7 @@ def display_track_exercises_page(st):
         # IF response table is empty
         if  not response.data:
              st.write("Congratulations!!! You dont have remain exercises") 
+            return [], [], "" 
             
         else:
             start_program = pd.DataFrame(response.data)
