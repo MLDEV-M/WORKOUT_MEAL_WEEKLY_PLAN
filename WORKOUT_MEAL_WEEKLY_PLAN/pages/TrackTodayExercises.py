@@ -103,46 +103,46 @@ def display_track_exercises_page(st):
              st.write("Congratulations!!! You dont have remain exercises") 
             return [], [], "" 
             
-        else:
-            start_program = pd.DataFrame(response.data)
-            # choose only morning or only afternoon
-            program_time = start_program[start_program["demo_time_done"]==time_done]
-            # remove alredy complete exercises
-            completed_ids = get_uncompleted_exercises_for_week(supabase, st)
-            program = program_time[~program_time["exercise_id"].isin(completed_ids)]
+        
+        start_program = pd.DataFrame(response.data)
+        # choose only morning or only afternoon
+        program_time = start_program[start_program["demo_time_done"]==time_done]
+        # remove alredy complete exercises
+        completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+        program = program_time[~program_time["exercise_id"].isin(completed_ids)]
     
-            #st.write("All the exercises:")
-            #st.write(program)
+        #st.write("All the exercises:")
+        #st.write(program)
     
            
-            # Check session state for existing selections
-            if 'selected_exercises_ids' in st.session_state and 'selected_exercises_names' in st.session_state:
-                ids_returned = st.session_state.selected_exercises_ids
-                names_returned = st.session_state.selected_exercises_names
-            else:
-                ids_returned, names_returned = [], []
+        # Check session state for existing selections
+        if 'selected_exercises_ids' in st.session_state and 'selected_exercises_names' in st.session_state:
+            ids_returned = st.session_state.selected_exercises_ids
+            names_returned = st.session_state.selected_exercises_names
+        else:
+            ids_returned, names_returned = [], []
             
-            # Get unique exercise categories (program names)
-            unique_exercises = list(program['table_name'].unique())
-            unique_exercises = unique_exercises[:4]  # Limit to 4 unique programs
+        # Get unique exercise categories (program names)
+        unique_exercises = list(program['table_name'].unique())
+        unique_exercises = unique_exercises[:4]  # Limit to 4 unique programs
     
-            # Initialize empty lists for IDs and names of selected exercises
-            ids_returned = []
-            names_returned = []
-            print('FDHGFD',unique_exercises)
-            # Loop through each unique program and call the form for that program
-            for program_i in unique_exercises:
-                print('SDFGq: ',str(program_i))
-                data_i = program[program['table_name']== str(program_i)]
-                # Call the form function for the current unique program
-                ids, names = my_form(data_i,program_i, st, supabase)
-                st.write(f"[DEBUG] Program: {program_i}, IDs: {ids}, Names: {names}")
-                # Append the returned IDs and names to the main lists
-                ids_returned.extend(ids)
-                names_returned.extend(names)
+        # Initialize empty lists for IDs and names of selected exercises
+        ids_returned = []
+        names_returned = []
+        print('FDHGFD',unique_exercises)
+        # Loop through each unique program and call the form for that program
+        for program_i in unique_exercises:
+            print('SDFGq: ',str(program_i))
+            data_i = program[program['table_name']== str(program_i)]
+            # Call the form function for the current unique program
+            ids, names = my_form(data_i,program_i, st, supabase)
+            st.write(f"[DEBUG] Program: {program_i}, IDs: {ids}, Names: {names}")
+            # Append the returned IDs and names to the main lists
+            ids_returned.extend(ids)
+            names_returned.extend(names)
     
-            # Return the final lists of selected exercise IDs and names
-            return ids_returned, names_returned,program
+        # Return the final lists of selected exercise IDs and names
+        return ids_returned, names_returned,program
 
     # Function to update the exercise tracking table in Supabase
     def update_exercise_tracking(supabase,exercise_id,exercise_name, user_choose):
