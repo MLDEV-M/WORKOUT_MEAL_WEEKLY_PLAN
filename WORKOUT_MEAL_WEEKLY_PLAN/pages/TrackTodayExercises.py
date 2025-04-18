@@ -223,12 +223,12 @@ def display_track_exercises_page(st):
     st.write(f"Selected day and time: {selected_program} - {selected_time_done}")
     ids_choose, names_choose, plan = day_choose(selected_program,selected_time_done, st, supabase)
     user_choose =  st.session_state.user['user_id']
-
-    # Final submit button to mark exercises as completed
-    final_submit = st.button("Check Remain Exercises")
+    
+    if not plan.empty:
+        # Final submit button to mark exercises as completed
+        final_submit = st.button("Check Remain Exercises")
     if 'current_plan' not in st.session_state:
-        if not plan.empty:
-            st.session_state.current_plan = plan.copy()
+        st.session_state.current_plan = plan.copy()
     
     if final_submit:
         try:
