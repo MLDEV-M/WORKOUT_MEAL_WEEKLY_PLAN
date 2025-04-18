@@ -34,7 +34,13 @@ def display_track_exercises_page(st):
 
         # User selects exercises from the current program
         with st.form(f"form_{selected_program}"):  # Ensure each form has a unique name
-            st.write(f"Choose exercises from the {selected_program} program")
+            st.write(f"Choose exercises from the {selected_program} program.")
+            # directions for exercises
+            if selected_program == "pylo":
+                st.write(f"1 set -> 15 seconds rest -> Perform each repetition with maximum explosiveness, focusing on speed and power as in Taekwondo kicks.")
+            if selected_program == "strength":
+                st.write(f"1 set -> 90 seconds rest -> Focus on strong, controlled movements to build power and endurance for powerful Taekwondo strikes.")
+
             # Multiselect widget for exercise selection
             exercise_checked = st.multiselect(
                 label='Which exercises did you complete?',
