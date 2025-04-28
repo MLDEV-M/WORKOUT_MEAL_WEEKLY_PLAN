@@ -222,7 +222,7 @@ def display_track_exercises_page(st):
     # Create a selectbox with the default value set to today
     selected_time_done = st.selectbox(
            'Choose the time of the day',
-           options=["MORNING","AFTERNOON"],  
+           options=["MORNING","WORK BREAK","AFTERNOON"],  
            index=0,
            help="Select what time of the day you do for the exercise program"
         )
