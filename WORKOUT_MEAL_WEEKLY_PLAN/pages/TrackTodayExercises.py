@@ -153,6 +153,7 @@ def display_track_exercises_page(st):
     # Function to update the exercise tracking table in Supabase
     def update_exercise_tracking(supabase,exercise_id,exercise_name, user_choose):
         from datetime import date,datetime
+        from zoneinfo import ZoneInfo
         # Get the current date
         today = date.today()
         #log the data to verify what we're trying to upsert
@@ -171,7 +172,8 @@ def display_track_exercises_page(st):
                     'exercise_id': exercise_id,
                     'user_id': user_choose,  # Assuming you have a user ID in session_state
                     'completed_date': str(today),  # Add date of completion
-                    'completed_week_day': datetime.now().strftime('%A') 
+                    'completed_week_day': datetime.now().strftime('%A') ,
+                    'completed_time': now.strftime("%H:%M")
                 }
              # If exercise_id exists, update it
             ).execute()
