@@ -173,7 +173,7 @@ def display_track_exercises_page(st):
                     'user_id': user_choose,  # Assuming you have a user ID in session_state
                     'completed_date': str(today),  # Add date of completion
                     'completed_week_day': datetime.now().strftime('%A') ,
-                    'completed_time': now.strftime("%H:%M")
+                    'completed_time': datetime.now(ZoneInfo("Europe/Nicosia")).strftime("%H:%M")
                 }
              # If exercise_id exists, update it
             ).execute()
