@@ -108,7 +108,7 @@ def display_track_exercises_page(st):
 
         # IF response table is empty, return empty result
         if not response.data:
-            return [], [], pd.DataFrame()
+            return pd.DataFrame(), []
     
         start_program = pd.DataFrame(response.data)
         unique_time_done = list(start_program['demo_time_done'].unique())
@@ -122,8 +122,8 @@ def display_track_exercises_page(st):
         #response = supabase.table(day).select('exercise_id', 'exercise_name_alternative','primary_muschle_group', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link','demo_time_done').execute()
         # IF response table is empty
         #if not response.data:
-            
-            #return [], [], pd.DataFrame() 
+        if start_program.empty:    
+            return [], [], pd.DataFrame() 
             
         
         #start_program = pd.DataFrame(response.data)
@@ -238,45 +238,48 @@ def display_track_exercises_page(st):
         help="Select the day for the exercise program"
     )
     the_program,time_done_options = unique_time_done_choose(selected_program, st, supabase)
-    # Create a selectbox with the default value set to today
-    selected_time_done = st.selectbox(
-           'Choose the time of the day',
-           options=time_done_options, #["MORNING","WORK BREAK","AFTERNOON","STRETCH"],  
-           index=0,
-           help="Select what time of the day you do for the exercise program"
-        )
-    st.write(f"Selected day and time: {selected_program} - {selected_time_done}")
-    ids_choose, names_choose, plan = time_done_choose(selected_program,selected_time_done,the_program, st, supabase)
-    user_choose =  st.session_state.user['user_id']
+    if time_done_options:
+        # Create a selectbox with the default value set to today
+        selected_time_done = st.selectbox(
+               'Choose the time of the day',
+               options=time_done_options, #["MORNING","WORK BREAK","AFTERNOON","STRETCH"],  
+               index=0,
+               help="Select what time of the day you do for the exercise program"
+            )
+        st.write(f"Selected day and time: {selected_program} - {selected_time_done}")
+        ids_choose, names_choose, plan = time_done_choose(selected_program,selected_time_done,the_program, st, supabase)
     
-    
-    # Final submit button to mark exercises as completed
-    final_submit = st.button("Check Remain Exercises")
-    if 'current_plan' not in st.session_state:
-        st.session_state.current_plan = plan.copy()
-    
-    if final_submit:
-        if not plan.empty:
-            
-            try:
-                #st.write("DEBUG: Submitted exercises", names_choose)
-                #st.write("DEBUG: For user ID", st.session_state.user['username'])
-    
-                completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+        
+        user_choose =  st.session_state.user['user_id']
+        
+        
+        # Final submit button to mark exercises as completed
+        final_submit = st.button("Check Remain Exercises")
+        if 'current_plan' not in st.session_state:
+            st.session_state.current_plan = plan.copy()
+        
+        if final_submit:
+            if not plan.empty:
                 
-                plan = plan[~plan['exercise_id'].isin(list(completed_ids))]
-                # st.session_state.current_plan = plan[plan["table_name"]!="stretch"].copy() #KEEP STRETCH
-                st.write("Your remain exercises except stretches.",len(st.session_state.current_plan))
-                
-                st.write(st.session_state.current_plan)
-            except Exception as e:
-                st.error("Please try again. Choose exercise completed!")
-                st.error(str(e))
-        else: 
-            st.write("Congratulations!!!") 
-            st.write("You dont have remain exercises") 
-           
-
+                try:
+                    #st.write("DEBUG: Submitted exercises", names_choose)
+                    #st.write("DEBUG: For user ID", st.session_state.user['username'])
+        
+                    completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+                    
+                    plan = plan[~plan['exercise_id'].isin(list(completed_ids))]
+                    # st.session_state.current_plan = plan[plan["table_name"]!="stretch"].copy() #KEEP STRETCH
+                    st.write("Your remain exercises except stretches.",len(st.session_state.current_plan))
+                    
+                    st.write(st.session_state.current_plan)
+                except Exception as e:
+                    st.error("Please try again. Choose exercise completed!")
+                    st.error(str(e))
+            else: 
+                st.write("Congratulations!!!") 
+                st.write("You dont have remain exercises") 
+    else:
+        st.write("You dont have remain exercises") 
 
 
         
