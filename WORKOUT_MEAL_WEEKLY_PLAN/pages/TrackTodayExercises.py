@@ -96,29 +96,39 @@ def display_track_exercises_page(st):
         if completed_df.empty:
             return []  # none completed, return all
         else:
+            # Reverse map: Greek → English
+            # Map the Greek day of the week to English
+            day_translation_reverse = {
+                'ΔΕΥΤΕΡΑ': 'Monday',
+                'ΤΡΙΤΗ': 'Tuesday',
+                'ΤΕΤΑΡΤΗ': 'Wednesday',
+                'ΠΕΜΠΤΗ': 'Thursday',
+                'ΠΑΡΑΣΚΕΥΗ': 'Friday',
+                'ΣΑΒΒΑΤΟ': 'Saturday',
+                'ΚΥΡΙΑΚΗ': 'Sunday'
+            }
+
+            day_en = day_translation_reverse[weekday]
             stretch_list = [1001, 1002, 1003, 1004, 1005, 1006, 1007]  # keep as integers
             completed_df['exercise_id'] = completed_df['exercise_id'].astype(int)  # ensure consistent type
-
-            # manually remove stretch exercises
-            stretch_list = ['1001', '1002', '1003', '1004', '1005', '1006', '1007']  
             
             # Filter out the exercises that are completed on the given weekday
-            completed_on_weekday = completed_df[completed_df['completed_week_day'] == weekday]
+            completed_on_weekday = completed_df[completed_df['completed_week_day'] == day_en]
             st.write(list(completed_on_weekday['exercise_id'])) 
             # Filter out the stretch exercises that were completed on the given weekday
             completed_on_weekday_stretch = completed_on_weekday[completed_on_weekday['exercise_id'].isin(stretch_list)]
-            st.write(list(completed_on_weekday_stretch['exercise_id'])) 
+            #st.write(list(completed_on_weekday_stretch['exercise_id'])) 
             # Now, remove these completed stretch exercises from the original completed_df
             remaining_exercises_df = completed_df[~completed_df['exercise_id'].isin(list(completed_on_weekday_stretch['exercise_id']))]
         
             # Return the remaining exercises as a list of exercise_ids
-            st.write(list(remaining_exercises_df["exercise_id"].unique()))
+            #st.write(list(remaining_exercises_df["exercise_id"].unique()))
             return list(remaining_exercises_df["exercise_id"].unique())
 
     
     def unique_time_done_choose(day, st, supabase):
         import pandas as pd
-    
+                
         # Fetch exercises data from Supabase for the specific day
         response = supabase.table(day).select('exercise_id', 'exercise_name_alternative', 'primary_muschle_group', 'sets', 'repeats', 'repeats_type', 'table_name', 'reference_link', 'demo_time_done').execute()
 
@@ -257,6 +267,8 @@ def display_track_exercises_page(st):
         index=exercise_day.index(today_in_greek),  # Set the default selection to today's day
         help="Select the day for the exercise program"
     )
+    
+
     the_program,time_done_options = unique_time_done_choose(selected_program, st, supabase)
     if time_done_options:
         # Create a selectbox with the default value set to today
