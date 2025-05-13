@@ -111,8 +111,12 @@ def display_track_exercises_page(st):
             return pd.DataFrame(), []
     
         start_program = pd.DataFrame(response.data)
-        unique_time_done = list(start_program['demo_time_done'].unique())
-        return start_program, unique_time_done
+        completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+        program = start_program[~start_program["exercise_id"].isin(completed_ids)]
+        
+        unique_time_done = list(program['demo_time_done'].unique())
+        
+        return program, unique_time_done
 
     
     def time_done_choose(day,time_done,start_program, st, supabase):
