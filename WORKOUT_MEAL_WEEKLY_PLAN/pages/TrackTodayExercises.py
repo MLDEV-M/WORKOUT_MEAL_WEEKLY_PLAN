@@ -98,19 +98,35 @@ def display_track_exercises_page(st):
         else:
             # 4. Filter out completed exercise_ids
             return list(completed_df["exercise_id"].unique())
+
     
-    def day_choose(day,time_done, st, supabase):
+    def unique_time_done_choose(day, st, supabase):
+        import pandas as pd
+    
+        # Fetch exercises data from Supabase for the specific day
+        response = supabase.table(day).select('exercise_id', 'exercise_name_alternative', 'primary_muschle_group', 'sets', 'repeats', 'repeats_type', 'table_name', 'reference_link', 'demo_time_done').execute()
+
+        # IF response table is empty, return empty result
+        if not response.data:
+            return [], [], pd.DataFrame()
+    
+        start_program = pd.DataFrame(response.data)
+        unique_time_done = list(start_program['demo_time_done'].unique())
+        return start_program, unique_time_done
+
+    
+    def time_done_choose(day,time_done,start_program, st, supabase):
         import pandas as pd
         
         # Fetch exercises data from Supabase for the specific day
-        response = supabase.table(day).select('exercise_id', 'exercise_name_alternative','primary_muschle_group', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link','demo_time_done').execute()
+        #response = supabase.table(day).select('exercise_id', 'exercise_name_alternative','primary_muschle_group', 'sets', 'repeats', 'repeats_type', 'table_name','reference_link','demo_time_done').execute()
         # IF response table is empty
-        if not response.data:
+        #if not response.data:
             
-            return [], [], pd.DataFrame() 
+            #return [], [], pd.DataFrame() 
             
         
-        start_program = pd.DataFrame(response.data)
+        #start_program = pd.DataFrame(response.data)
         # choose only morning or only afternoon
         program_time = start_program[start_program["demo_time_done"]==time_done]
         # remove alredy complete exercises
@@ -221,15 +237,16 @@ def display_track_exercises_page(st):
         index=exercise_day.index(today_in_greek),  # Set the default selection to today's day
         help="Select the day for the exercise program"
     )
+    the_program,time_done_options = unique_time_done_choose(selected_program, st, supabase)
     # Create a selectbox with the default value set to today
     selected_time_done = st.selectbox(
            'Choose the time of the day',
-           options=["MORNING","WORK BREAK","AFTERNOON","STRETCH"],  
+           options=time_done_options, #["MORNING","WORK BREAK","AFTERNOON","STRETCH"],  
            index=0,
            help="Select what time of the day you do for the exercise program"
         )
     st.write(f"Selected day and time: {selected_program} - {selected_time_done}")
-    ids_choose, names_choose, plan = day_choose(selected_program,selected_time_done, st, supabase)
+    ids_choose, names_choose, plan = time_done_choose(selected_program,selected_time_done,the_program, st, supabase)
     user_choose =  st.session_state.user['user_id']
     
     
