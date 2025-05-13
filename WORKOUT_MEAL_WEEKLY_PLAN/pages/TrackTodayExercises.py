@@ -93,24 +93,26 @@ def display_track_exercises_page(st):
         tracking_response = supabase.table("exercise_tracking").select("*").eq("user_id", st.session_state.user['user_id']).gte("completed_date", start_str).lte("completed_date", end_str).execute()
         completed_df = pd.DataFrame(tracking_response.data)
 
-        # Fetch exercises data from Supabase for the stretch
-        stretch_df =  pd.DataFrame(supabase.table("stretch_exercise").select('exercise_id').execute())
-        stretch_list = list(stretch_df["exercise_id"].unique())
-        
-        
+            
 
         if completed_df.empty:
             return []  # none completed, return all
         else:
-            # here i want to remove this id if exest only the weekday -->column='completed_week_day' value above 
-            # 4. Filter out exercises completed on the given weekday
+            
+            # manually remove stretch exercises
+            stretch_list = [1001, 1002, 1003, 1004, 1005, 1006, 1007]  
+            
+            # Filter out the exercises that are completed on the given weekday
             completed_on_weekday = completed_df[completed_df['completed_week_day'] == weekday]
-            # Get a list of exercise_ids that were completed on the specific weekday
-            completed_exercise_ids = set(completed_on_weekday['exercise_id'])
-            # Remove exercises from stretch_df that are in the completed_exercise_ids list
-            remaining_exercises = stretch_df[~stretch_df['exercise_id'].isin(completed_exercise_ids)]
-            # 4. Filter out completed exercise_ids
-            return list(remaining_exercises["exercise_id"].unique())
+            
+            # Filter out the stretch exercises that were completed on the given weekday
+            completed_on_weekday_stretch = completed_on_weekday[completed_on_weekday['exercise_id'].isin(stretch_list)]
+        
+            # Now, remove these completed stretch exercises from the original completed_df
+            remaining_exercises_df = completed_df[~completed_df['exercise_id'].isin(completed_on_weekday_stretch['exercise_id'])]
+        
+            # Return the remaining exercises as a list of exercise_ids
+            return list(remaining_exercises_df["exercise_id"].unique())
 
     
     def unique_time_done_choose(day, st, supabase):
