@@ -93,13 +93,12 @@ def display_track_exercises_page(st):
         tracking_response = supabase.table("exercise_tracking").select("*").eq("user_id", st.session_state.user['user_id']).gte("completed_date", start_str).lte("completed_date", end_str).execute()
         completed_df = pd.DataFrame(tracking_response.data)
 
-        #fix exercise_id format as str
-        #completed_df['exercise_id'] = completed_df['exercise_id'].astype(str)
-
         if completed_df.empty:
             return []  # none completed, return all
         else:
-            
+            stretch_list = [1001, 1002, 1003, 1004, 1005, 1006, 1007]  # keep as integers
+            completed_df['exercise_id'] = completed_df['exercise_id'].astype(int)  # ensure consistent type
+
             # manually remove stretch exercises
             stretch_list = ['1001', '1002', '1003', '1004', '1005', '1006', '1007']  
             
