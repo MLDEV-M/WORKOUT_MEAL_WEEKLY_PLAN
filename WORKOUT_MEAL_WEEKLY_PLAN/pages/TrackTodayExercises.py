@@ -272,7 +272,7 @@ def display_track_exercises_page(st):
                     completed_ids = get_uncompleted_exercises_for_week(supabase, st)
                     
                     plan = plan[~plan['exercise_id'].isin(list(completed_ids))]
-                    # st.session_state.current_plan = plan[plan["table_name"]!="stretch"].copy() #KEEP STRETCH
+                    st.session_state.current_plan = plan #plan[plan["table_name"]!="stretch"].copy() #KEEP STRETCH
                     st.write("Your remain exercises except stretches.",len(st.session_state.current_plan))
                     
                     st.write(st.session_state.current_plan)
