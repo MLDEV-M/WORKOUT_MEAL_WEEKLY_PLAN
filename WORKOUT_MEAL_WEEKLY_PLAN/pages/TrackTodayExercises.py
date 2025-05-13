@@ -69,7 +69,7 @@ def display_track_exercises_page(st):
                     st.session_state.selected_exercises_names = names_returned
         return ids_returned, names_returned
 
-    def get_uncompleted_exercises_for_week(supabase, st):
+    def get_uncompleted_exercises_for_week(weekday,supabase, st):
         from datetime import datetime, timedelta
         import pandas as pd
 
@@ -93,11 +93,24 @@ def display_track_exercises_page(st):
         tracking_response = supabase.table("exercise_tracking").select("*").eq("user_id", st.session_state.user['user_id']).gte("completed_date", start_str).lte("completed_date", end_str).execute()
         completed_df = pd.DataFrame(tracking_response.data)
 
+        # Fetch exercises data from Supabase for the stretch
+        stretch_df =  pd.DataFrame(supabase.table("stretch_exercise").select('exercise_id').execute())
+        stretch_list = list(stretch_df["exercise_id"].unique())
+        
+        
+
         if completed_df.empty:
             return []  # none completed, return all
         else:
+            # here i want to remove this id if exest only the weekday -->column='completed_week_day' value above 
+            # 4. Filter out exercises completed on the given weekday
+            completed_on_weekday = completed_df[completed_df['completed_week_day'] == weekday]
+            # Get a list of exercise_ids that were completed on the specific weekday
+            completed_exercise_ids = set(completed_on_weekday['exercise_id'])
+            # Remove exercises from stretch_df that are in the completed_exercise_ids list
+            remaining_exercises = stretch_df[~stretch_df['exercise_id'].isin(completed_exercise_ids)]
             # 4. Filter out completed exercise_ids
-            return list(completed_df["exercise_id"].unique())
+            return list(remaining_exercises["exercise_id"].unique())
 
     
     def unique_time_done_choose(day, st, supabase):
@@ -111,7 +124,7 @@ def display_track_exercises_page(st):
             return pd.DataFrame(), []
     
         start_program = pd.DataFrame(response.data)
-        completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+        completed_ids = get_uncompleted_exercises_for_week(day,supabase, st)
         program = start_program[~start_program["exercise_id"].isin(completed_ids)]
         
         unique_time_done = list(program['demo_time_done'].unique())
@@ -134,7 +147,7 @@ def display_track_exercises_page(st):
         # choose only morning or only afternoon
         program_time = start_program[start_program["demo_time_done"]==time_done]
         # remove alredy complete exercises
-        completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+        completed_ids = get_uncompleted_exercises_for_week(day,supabase, st)
         program = program_time[~program_time["exercise_id"].isin(completed_ids)]
     
         #st.write("All the exercises:")
@@ -269,7 +282,7 @@ def display_track_exercises_page(st):
                     #st.write("DEBUG: Submitted exercises", names_choose)
                     #st.write("DEBUG: For user ID", st.session_state.user['username'])
         
-                    completed_ids = get_uncompleted_exercises_for_week(supabase, st)
+                    completed_ids = get_uncompleted_exercises_for_week(selected_program,supabase, st)
                     
                     plan = plan[~plan['exercise_id'].isin(list(completed_ids))]
                     st.session_state.current_plan = plan #plan[plan["table_name"]!="stretch"].copy() #KEEP STRETCH
