@@ -107,9 +107,9 @@ def display_track_exercises_page(st):
             
             # Filter out the stretch exercises that were completed on the given weekday
             completed_on_weekday_stretch = completed_on_weekday[completed_on_weekday['exercise_id'].isin(stretch_list)]
-        
+            st.write(list(completed_on_weekday_stretch['exercise_id'])) 
             # Now, remove these completed stretch exercises from the original completed_df
-            remaining_exercises_df = completed_df[~completed_df['exercise_id'].isin(completed_on_weekday_stretch['exercise_id'])]
+            remaining_exercises_df = completed_df[~completed_df['exercise_id'].isin(list(completed_on_weekday_stretch['exercise_id']))]
         
             # Return the remaining exercises as a list of exercise_ids
             return list(remaining_exercises_df["exercise_id"].unique())
