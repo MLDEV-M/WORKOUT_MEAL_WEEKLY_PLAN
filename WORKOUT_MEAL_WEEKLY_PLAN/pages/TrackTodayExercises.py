@@ -122,7 +122,7 @@ def display_track_exercises_page(st):
             
             #remaining_exercises_df = completed_df[~completed_df['exercise_id'].isin(list(completed_on_weekday_stretch['exercise_id']))]
             completed_df_no_stretch = completed_df[~completed_df['exercise_id'].isin(stretch_list)]
-            remaining_exercises = list(completed_df_no_stretch["exercise_id"].unique()) + list(set(stretch_list) - set(completed_on_weekday_stretch["exercise_id"].unique()))
+            remaining_exercises = list(completed_df_no_stretch["exercise_id"].unique()) #+ list(set(stretch_list) - set(completed_on_weekday_stretch["exercise_id"].unique()))
 
             # Return the remaining exercises as a list of exercise_ids
             #st.write(list(remaining_exercises_df["exercise_id"].unique()))
