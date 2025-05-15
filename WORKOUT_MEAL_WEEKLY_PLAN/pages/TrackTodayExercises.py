@@ -311,15 +311,14 @@ def display_track_exercises_page(st):
                     for _, link in st.session_state.current_plan.iterrows():
                         exercise_name = link['exercise_name_alternative']
                         video_url = link['reference_link']
-        
-                        # Display exercise name
-                        st.write(exercise_name)
-        
-                        try:
-                            # For YouTube videos (check if the link is valid)
-                            st.video(video_url)
-                        except:
-                            st.write("No video link available.")
+                        
+                        # Check if video URL exists and is not None or empty
+                        if video_url:  # This will check if video_url is not None, empty string, or any other falsy value
+                            st.write(exercise_name)  # Display exercise name
+                            st.video(video_url)  # Display the video if the URL exists
+                        else:
+                            #st.write("No video link available.")
+                            pass
 
                 except Exception as e:
                     st.error("Please try again. Choose exercise completed!")
