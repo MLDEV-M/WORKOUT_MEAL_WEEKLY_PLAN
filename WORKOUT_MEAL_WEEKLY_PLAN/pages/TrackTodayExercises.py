@@ -308,13 +308,18 @@ def display_track_exercises_page(st):
                     
                     st.write(st.session_state.current_plan[['exercise_id', 'exercise_name_alternative', 'primary_muschle_group', 'sets', 'repeats', 'repeats_type', 'table_name', 'demo_time_done']])
                     # add youtube video for each exercise
-                    for link in st.session_state.current_plan:
-                        st.write(link['exercise_name_alternative'])
-                        try: 
-                            # For YouTube videos
-                            st.video(link['reference_link'])
+                    for _, link in st.session_state.current_plan.iterrows():
+                        exercise_name = link['exercise_name_alternative']
+                        video_url = link['reference_link']
+        
+                        # Display exercise name
+                        st.write(exercise_name)
+        
+                        try:
+                            # For YouTube videos (check if the link is valid)
+                            st.video(video_url)
                         except:
-                            st.write("No available video")
+                            st.write("No video link available.")
 
                 except Exception as e:
                     st.error("Please try again. Choose exercise completed!")
