@@ -306,7 +306,16 @@ def display_track_exercises_page(st):
                     st.session_state.current_plan = plan #plan[plan["table_name"]!="stretch"].copy() #KEEP STRETCH
                     st.write("Your remain exercises except stretches.",len(st.session_state.current_plan))
                     
-                    st.write(st.session_state.current_plan)
+                    st.write(st.session_state.current_plan[['exercise_id', 'exercise_name_alternative', 'primary_muschle_group', 'sets', 'repeats', 'repeats_type', 'table_name', 'demo_time_done']])
+                    # add youtube video for each exercise
+                    for link in st.session_state.current_plan:
+                        st.write(link['exercise_name_alternative'])
+                        try: 
+                            # For YouTube videos
+                            st.video(link['reference_link'])
+                        except:
+                            st.write("No available video")
+
                 except Exception as e:
                     st.error("Please try again. Choose exercise completed!")
                     st.error(str(e))
